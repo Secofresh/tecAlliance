@@ -1,0 +1,171 @@
+### Article API Examples
+### Base URL: http://localhost:8080/api/articles
+
+### 1. Create a new article (Basic)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse",
+  "slogan": "Ergonomic wireless mouse with 6 buttons",
+  "netPrice": 15.00,
+  "salesPrice": 29.99,
+  "vatRatio": 0.19
+}
+
+### 2. Create an article with discounts (Non-overlapping)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard",
+  "slogan": "RGB backlit mechanical gaming keyboard",
+  "netPrice": 50.00,
+  "salesPrice": 120.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Spring Sale",
+      "discountPercentage": 20,
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-31"
+    },
+    {
+      "description": "Summer Sale",
+      "discountPercentage": 25,
+      "startDate": "2026-06-01",
+      "endDate": "2026-06-30"
+    }
+  ]
+}
+
+### 3. Create an article with a single discount
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "USB-C Hub",
+  "slogan": "7-in-1 USB-C multiport adapter",
+  "netPrice": 20.00,
+  "salesPrice": 49.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Black Friday",
+      "discountPercentage": 30,
+      "startDate": "2026-11-27",
+      "endDate": "2026-11-30"
+    }
+  ]
+}
+
+### 4. Get all articles
+GET http://localhost:8080/api/articles
+Accept: application/json
+
+### 5. Get article by ID (replace {id} with actual ID)
+GET http://localhost:8080/api/articles/1
+Accept: application/json
+
+### 6. Update an article (replace {id} with actual ID)
+PUT http://localhost:8080/api/articles/1
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse Pro",
+  "slogan": "Updated ergonomic wireless mouse with 8 buttons",
+  "netPrice": 15.00,
+  "salesPrice": 34.99,
+  "vatRatio": 0.19
+}
+
+### 7. Update article and add discount
+PUT http://localhost:8080/api/articles/1
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse Pro",
+  "slogan": "Premium wireless mouse",
+  "netPrice": 15.00,
+  "salesPrice": 39.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Launch Discount",
+      "discountPercentage": 15,
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-28"
+    }
+  ]
+}
+
+### 8. Delete an article (replace {id} with actual ID)
+DELETE http://localhost:8080/api/articles/1
+
+### 9. Check if article exists (HEAD request)
+HEAD http://localhost:8080/api/articles/1
+
+### 10. Try to create article with overlapping discounts (Should FAIL with 400)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Gaming Headset",
+  "slogan": "Surround sound gaming headset",
+  "netPrice": 30.00,
+  "salesPrice": 79.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "January Sale",
+      "discountPercentage": 20,
+      "startDate": "2026-01-01",
+      "endDate": "2026-01-31"
+    },
+    {
+      "description": "Winter Sale",
+      "discountPercentage": 15,
+      "startDate": "2026-01-15",
+      "endDate": "2026-02-15"
+    }
+  ]
+}
+
+### 11. Try to create article with discount causing loss (Should FAIL with 400)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Budget Mouse",
+  "slogan": "Simple USB mouse",
+  "netPrice": 10.00,
+  "salesPrice": 12.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Too High Discount",
+      "discountPercentage": 25,
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-28"
+    }
+  ]
+}
+
+### 12. Get non-existent article (Should return 404)
+GET http://localhost:8080/api/articles/999999
+Accept: application/json
+
+### 13. Update non-existent article (Should return 404)
+PUT http://localhost:8080/api/articles/999999
+Content-Type: application/json
+
+{
+  "name": "Non-existent",
+  "slogan": "This should fail",
+  "netPrice": 10.00,
+  "salesPrice": 20.00,
+  "vatRatio": 0.19
+}
+
+### 14. Delete non-existent article (Should return 404)
+DELETE http://localhost:8080/api/articles/999999

@@ -1,0 +1,271 @@
+### Discount Validation Test Scenarios
+### Testing the two main validation rules:
+### 1. Discounted price must never go below net price
+### 2. Only one discount can be applicable at a time (no overlapping periods)
+
+### ========================================
+### VALID SCENARIOS (Should succeed with 201 Created)
+### ========================================
+
+### Valid: Single discount, price stays above net price
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Laptop Stand",
+  "slogan": "Adjustable aluminum laptop stand",
+  "netPrice": 20.00,
+  "salesPrice": 50.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Early Bird Discount",
+      "discountPercentage": 30,
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-15"
+    }
+  ]
+}
+### Discounted price: 50 - (50 * 0.30) = 35.00 >= 20.00 ✓
+
+### Valid: Multiple non-overlapping discounts
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Webcam",
+  "slogan": "Full HD 1080p webcam",
+  "netPrice": 30.00,
+  "salesPrice": 80.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Q1 Sale",
+      "discountPercentage": 25,
+      "startDate": "2026-01-01",
+      "endDate": "2026-03-31"
+    },
+    {
+      "description": "Q2 Sale",
+      "discountPercentage": 20,
+      "startDate": "2026-04-01",
+      "endDate": "2026-06-30"
+    },
+    {
+      "description": "Back to School",
+      "discountPercentage": 15,
+      "startDate": "2026-08-15",
+      "endDate": "2026-09-15"
+    }
+  ]
+}
+### All periods are separate ✓
+
+### Valid: Discount at exactly net price (edge case)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Phone Charger",
+  "slogan": "Fast charging USB-C charger",
+  "netPrice": 10.00,
+  "salesPrice": 20.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Half Price",
+      "discountPercentage": 50,
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-31"
+    }
+  ]
+}
+### Discounted price: 20 - (20 * 0.50) = 10.00 = 10.00 (net price) ✓
+
+### Valid: Consecutive discounts (end date of one, start date of next day after)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Monitor",
+  "slogan": "27-inch 4K monitor",
+  "netPrice": 200.00,
+  "salesPrice": 500.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "January Promotion",
+      "discountPercentage": 20,
+      "startDate": "2026-01-01",
+      "endDate": "2026-01-31"
+    },
+    {
+      "description": "February Promotion",
+      "discountPercentage": 15,
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-28"
+    }
+  ]
+}
+### No overlap: Jan 31 ends, Feb 1 starts ✓
+
+### ========================================
+### INVALID SCENARIOS (Should fail with 400 Bad Request)
+### ========================================
+
+### Invalid: Discount causes price below net price
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Mouse Pad",
+  "slogan": "Large gaming mouse pad",
+  "netPrice": 15.00,
+  "salesPrice": 18.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Clearance",
+      "discountPercentage": 20,
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-28"
+    }
+  ]
+}
+### Discounted price: 18 - (18 * 0.20) = 14.40 < 15.00 (net price) ✗
+### Expected error: "Discounts would cause the article price to go below net price"
+
+### Invalid: Overlapping discount periods (Complete overlap)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Keyboard",
+  "slogan": "Wireless keyboard",
+  "netPrice": 25.00,
+  "salesPrice": 60.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Spring Sale",
+      "discountPercentage": 15,
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-31"
+    },
+    {
+      "description": "Member Discount",
+      "discountPercentage": 10,
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-31"
+    }
+  ]
+}
+### Same period ❌
+### Expected error: "Multiple discounts have overlapping date ranges"
+
+### Invalid: Overlapping discount periods (Partial overlap)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Headphones",
+  "slogan": "Noise-cancelling headphones",
+  "netPrice": 50.00,
+  "salesPrice": 150.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Winter Sale",
+      "discountPercentage": 20,
+      "startDate": "2026-01-01",
+      "endDate": "2026-02-15"
+    },
+    {
+      "description": "Valentine's Day",
+      "discountPercentage": 15,
+      "startDate": "2026-02-10",
+      "endDate": "2026-02-20"
+    }
+  ]
+}
+### Overlap from Feb 10 to Feb 15 ❌
+### Expected error: "Multiple discounts have overlapping date ranges"
+
+### Invalid: Adjacent periods (touching on same date)
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Microphone",
+  "slogan": "USB condenser microphone",
+  "netPrice": 40.00,
+  "salesPrice": 100.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "March Madness",
+      "discountPercentage": 25,
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-20"
+    },
+    {
+      "description": "Spring Break",
+      "discountPercentage": 20,
+      "startDate": "2026-03-20",
+      "endDate": "2026-03-31"
+    }
+  ]
+}
+### March 20 is in both periods ✗
+#### Expected error: "Multiple discounts have overlapping date ranges"
+
+### Invalid: Very high discount causing loss
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Cable",
+  "slogan": "USB-C to USB-A cable",
+  "netPrice": 8.00,
+  "salesPrice": 10.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Extreme Clearance",
+      "discountPercentage": 50,
+      "startDate": "2026-12-01",
+      "endDate": "2026-12-31"
+    }
+  ]
+}
+### Discounted price: 10 - (10 * 0.50) = 5.00 < 8.00 (net price) ✗
+### Expected error: "Discounts would cause the article price to go below net price"
+
+### Invalid: One discount that's safe, but one that causes loss
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Adapter",
+  "slogan": "HDMI to DisplayPort adapter",
+  "netPrice": 12.00,
+  "salesPrice": 18.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Safe Discount",
+      "discountPercentage": 10,
+      "startDate": "2026-04-01",
+      "endDate": "2026-04-30"
+    },
+    {
+      "description": "Dangerous Discount",
+      "discountPercentage": 40,
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-31"
+    }
+  ]
+}
+### First: 18 - (18 * 0.10) = 16.20 >= 12.00 ✓
+### Second: 18 - (18 * 0.40) = 10.80 < 12.00 ✗
+### Expected error: "Discounts would cause the article price to go below net price"

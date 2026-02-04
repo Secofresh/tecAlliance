@@ -1,0 +1,195 @@
+### ========================================
+### STEP 1: Create Articles
+### ========================================
+
+### Create Article 1: Laptop
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Dell XPS 15",
+  "slogan": "Professional laptop for developers",
+  "netPrice": 800.00,
+  "salesPrice": 1499.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Student Discount",
+      "discountPercentage": 10,
+      "startDate": "2026-09-01",
+      "endDate": "2026-09-30"
+    }
+  ]
+}
+
+###
+
+### Create Article 2: Mouse
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Logitech MX Master 3",
+  "slogan": "Advanced wireless mouse for power users",
+  "netPrice": 40.00,
+  "salesPrice": 99.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Launch Promo",
+      "discountPercentage": 15,
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-28"
+    },
+    {
+      "description": "Summer Sale",
+      "discountPercentage": 20,
+      "startDate": "2026-07-01",
+      "endDate": "2026-07-31"
+    }
+  ]
+}
+
+###
+
+### Create Article 3: Monitor
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "LG UltraWide 34\"",
+  "slogan": "Curved ultrawide monitor for productivity",
+  "netPrice": 350.00,
+  "salesPrice": 699.99,
+  "vatRatio": 0.19
+}
+
+###
+
+### ========================================
+### STEP 2: Read Articles
+### ========================================
+
+### Get all articles
+GET http://localhost:8080/api/articles
+Accept: application/json
+
+###
+
+### Get specific article by ID (replace 1 with actual ID)
+GET http://localhost:8080/api/articles/1
+Accept: application/json
+
+###
+
+### Check if article exists using HEAD
+HEAD http://localhost:8080/api/articles/1
+
+###
+
+### Try to get non-existent article (should return 404)
+GET http://localhost:8080/api/articles/999
+Accept: application/json
+
+###
+
+### ========================================
+### STEP 3: Update Articles
+### ========================================
+
+### Update article - change price
+PUT http://localhost:8080/api/articles/1
+Content-Type: application/json
+
+{
+  "name": "Dell XPS 15",
+  "slogan": "Professional laptop for developers - Price Drop!",
+  "netPrice": 800.00,
+  "salesPrice": 1399.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Student Discount",
+      "discountPercentage": 10,
+      "startDate": "2026-09-01",
+      "endDate": "2026-09-30"
+    }
+  ]
+}
+
+###
+
+### Update article - add new discount period
+PUT http://localhost:8080/api/articles/2
+Content-Type: application/json
+
+{
+  "name": "Logitech MX Master 3",
+  "slogan": "Advanced wireless mouse for power users",
+  "netPrice": 40.00,
+  "salesPrice": 99.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Launch Promo",
+      "discountPercentage": 15,
+      "startDate": "2026-02-01",
+      "endDate": "2026-02-28"
+    },
+    {
+      "description": "Easter Sale",
+      "discountPercentage": 18,
+      "startDate": "2026-04-01",
+      "endDate": "2026-04-15"
+    },
+    {
+      "description": "Summer Sale",
+      "discountPercentage": 20,
+      "startDate": "2026-07-01",
+      "endDate": "2026-07-31"
+    }
+  ]
+}
+
+###
+
+### Update article - add discount
+PUT http://localhost:8080/api/articles/3
+Content-Type: application/json
+
+{
+  "name": "LG UltraWide 34\"",
+  "slogan": "Curved ultrawide monitor - NOW ON SALE!",
+  "netPrice": 350.00,
+  "salesPrice": 699.99,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Black Friday",
+      "discountPercentage": 25,
+      "startDate": "2026-11-27",
+      "endDate": "2026-11-30"
+    }
+  ]
+}
+
+###
+
+### ========================================
+### STEP 4: Delete Articles
+### ========================================
+
+### Delete article 3
+DELETE http://localhost:8080/api/articles/3
+
+###
+
+### Verify deletion - should return 404
+GET http://localhost:8080/api/articles/3
+Accept: application/json
+
+###
+
+### Get all remaining articles
+GET http://localhost:8080/api/articles
+Accept: application/json

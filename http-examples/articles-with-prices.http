@@ -1,0 +1,168 @@
+### ========================================
+### Example 1: Get articles with prices for a specific date
+### ========================================
+
+### First, create some articles with discounts
+
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse",
+  "slogan": "Ergonomic wireless mouse",
+  "netPrice": 15.00,
+  "salesPrice": 35.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Summer Sale",
+      "discountPercentage": 30,
+      "startDate": "2026-06-01",
+      "endDate": "2026-06-30"
+    }
+  ]
+}
+
+###
+
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard",
+  "slogan": "RGB backlit keyboard",
+  "netPrice": 50.00,
+  "salesPrice": 120.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Spring Sale",
+      "discountPercentage": 20,
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-31"
+    },
+    {
+      "description": "Back to School",
+      "discountPercentage": 25,
+      "startDate": "2026-08-15",
+      "endDate": "2026-09-15"
+    }
+  ]
+}
+
+###
+
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "USB-C Hub",
+  "slogan": "7-in-1 multiport adapter",
+  "netPrice": 20.00,
+  "salesPrice": 45.00,
+  "vatRatio": 0.19
+}
+
+###
+
+### ========================================
+### Example 2: Get prices during Summer Sale (June 15, 2026)
+### ========================================
+
+GET http://localhost:8080/api/articles?date=2026-06-15&withPrices=true
+Accept: application/json
+
+
+### ========================================
+### Example 3: Get prices during Spring Sale (March 15, 2026)
+### ========================================
+
+GET http://localhost:8080/api/articles?date=2026-03-15&withPrices=true
+Accept: application/json
+
+
+### ========================================
+### Example 4: Get prices during Back to School (September 1, 2026)
+### ========================================
+
+GET http://localhost:8080/api/articles?date=2026-09-01&withPrices=true
+Accept: application/json
+
+### ========================================
+### Example 5: Get prices on a date with no active discounts
+### ========================================
+
+GET http://localhost:8080/api/articles?date=2026-12-25&withPrices=true
+Accept: application/json
+
+### ========================================
+### Example 6: Compare endpoints - all articles vs only discounted articles
+### ========================================
+
+# This endpoint shows ALL articles with their prices
+GET http://localhost:8080/api/articles?date=2026-06-15&withPrices=true
+Accept: application/json
+
+###
+
+# This endpoint shows ONLY articles that have an active discount
+GET http://localhost:8080/api/articles?date=2026-06-15&discountOnly=true
+Accept: application/json
+
+### ========================================
+### Example 7: Create article with discount that would go below net price
+### ========================================
+
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Test Article",
+  "slogan": "Test",
+  "netPrice": 100.00,
+  "salesPrice": 110.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Big Discount",
+      "discountPercentage": 15,
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-31"
+    }
+  ]
+}
+
+### Discounted price would be: 110 - (110 * 0.15) = 93.50 < 100 (net price)
+### This will FAIL with 400 Bad Request
+
+###
+
+# After fixing the discount to be valid:
+POST http://localhost:8080/api/articles
+Content-Type: application/json
+
+{
+  "name": "Test Article",
+  "slogan": "Test",
+  "netPrice": 100.00,
+  "salesPrice": 150.00,
+  "vatRatio": 0.19,
+  "discounts": [
+    {
+      "description": "Safe Discount",
+      "discountPercentage": 15,
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-31"
+    }
+  ]
+}
+
+### Discounted price: 150 - (150 * 0.15) = 127.50 >= 100 ✓
+
+###
+
+# Then check the price
+GET http://localhost:8080/api/articles?date=2026-05-15&withPrices=true
+Accept: application/json
+
+# Expected: finalPrice = 127.50 (price is capped at net price if needed)
