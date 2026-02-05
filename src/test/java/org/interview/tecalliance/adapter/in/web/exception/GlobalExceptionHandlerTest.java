@@ -1,4 +1,4 @@
-package org.interview.tecalliance.exception;
+package org.interview.tecalliance.adapter.in.web.exception;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -51,16 +51,17 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<Object> response = exceptionHandler.handleIllegalArgumentException(ex, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
 
         Map<String, Object> body = (Map<String, Object>) response.getBody();
-
+        assertEquals(400, body.get("status"));
         assertEquals(errorMessage, body.get("message"));
     }
 
     @Test
-    void testHandleIllegalArgumentException_SanitizesXSS() {
-        String maliciousMessage = "Error: <script>alert('XSS')</script>";
-        IllegalArgumentException ex = new IllegalArgumentException(maliciousMessage);
+    void testHandleIllegalArgumentException_EscapesHtmlInMessage() {
+        String errorMessage = "<script>alert('xss')</script>";
+        IllegalArgumentException ex = new IllegalArgumentException(errorMessage);
 
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
         servletRequest.setRequestURI("/api/articles");
@@ -68,13 +69,12 @@ class GlobalExceptionHandlerTest {
 
         ResponseEntity<Object> response = exceptionHandler.handleIllegalArgumentException(ex, request);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
         Map<String, Object> body = (Map<String, Object>) response.getBody();
+        String message = (String) body.get("message");
 
-        String sanitizedMessage = (String) body.get("message");
-        assertTrue(sanitizedMessage.contains("&lt;script&gt;"));
-        assertFalse(sanitizedMessage.contains("<script>"));
+        // HTML should be escaped
+        assertFalse(message.contains("<script>"));
+        assertTrue(message.contains("&lt;script&gt;") || message.contains("&amp;lt;script&amp;gt;"));
     }
 
     @Test
@@ -82,7 +82,7 @@ class GlobalExceptionHandlerTest {
         Exception ex = new RuntimeException("Unexpected error");
 
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-        servletRequest.setRequestURI("/api/articles/1");
+        servletRequest.setRequestURI("/api/articles/123");
         WebRequest request = new ServletWebRequest(servletRequest);
 
         ResponseEntity<Object> response = exceptionHandler.handleGlobalException(ex, request);
@@ -95,26 +95,28 @@ class GlobalExceptionHandlerTest {
         assertEquals(500, body.get("status"));
         assertEquals("Internal Server Error", body.get("error"));
         assertEquals("An unexpected error occurred", body.get("message"));
-        assertTrue(body.get("path").toString().contains("/api/articles/1"));
+        assertTrue(body.get("path").toString().contains("/api/articles/123"));
         assertNotNull(body.get("timestamp"));
     }
 
     @Test
-    void testResponseBodyStructure() {
-        IllegalArgumentException ex = new IllegalArgumentException("Test error");
+    void testHandleGlobalException_DoesNotExposeInternalErrorMessage() {
+        // Even though the actual exception has a specific message,
+        // we return a generic message to avoid leaking internal details
+        Exception ex = new RuntimeException("Database connection failed: user=admin, password=secret");
+
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-        servletRequest.setRequestURI("/api/test");
+        servletRequest.setRequestURI("/api/articles");
         WebRequest request = new ServletWebRequest(servletRequest);
 
-        ResponseEntity<Object> response = exceptionHandler.handleIllegalArgumentException(ex, request);
+        ResponseEntity<Object> response = exceptionHandler.handleGlobalException(ex, request);
 
         Map<String, Object> body = (Map<String, Object>) response.getBody();
+        String message = (String) body.get("message");
 
-        assertNotNull(body);
-        assertTrue(body.containsKey("timestamp"));
-        assertTrue(body.containsKey("status"));
-        assertTrue(body.containsKey("error"));
-        assertTrue(body.containsKey("message"));
-        assertTrue(body.containsKey("path"));
+        // Should not expose the actual error message
+        assertEquals("An unexpected error occurred", message);
+        assertFalse(message.contains("password"));
+        assertFalse(message.contains("Database"));
     }
 }

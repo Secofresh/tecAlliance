@@ -1,8 +1,10 @@
-package org.interview.tecalliance.model;
+package org.interview.tecalliance.domain.model.article;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.interview.tecalliance.domain.model.Discount;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,8 +15,10 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@Schema(description = "Article entity with discount management capabilities")
 public class Article extends BaseArticle {
 
+    @Schema(description = "List of discounts applicable to this article", example = "[]")
     private List<Discount> discounts = new ArrayList<>();
 
     public Article(Long id, String name, String slogan, BigDecimal netPrice,

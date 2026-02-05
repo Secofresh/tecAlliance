@@ -1,7 +1,7 @@
-package org.interview.tecalliance.controller;
+package org.interview.tecalliance.adapter.in.web;
 
-import org.interview.tecalliance.model.Article;
-import org.interview.tecalliance.service.ArticleService;
+import org.interview.tecalliance.application.port.in.ArticleUseCase;
+import org.interview.tecalliance.domain.model.article.Article;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ArticleControllerTest {
+class ArticleRestAdapterTest {
 
     @LocalServerPort
     private int port;
@@ -24,11 +24,11 @@ class ArticleControllerTest {
     private RestClient restClient;
 
     @Autowired
-    private ArticleService articleService;
+    private ArticleUseCase articleUseCase;
 
     @BeforeEach
     void setUp() {
-        String baseUrl = "http://localhost:" + port + "/api/articles";
+        String baseUrl = "http://localhost:" + port + "/api/v1/articles";
         restClient = RestClient.builder().baseUrl(baseUrl).build();
     }
 
@@ -41,7 +41,7 @@ class ArticleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(article)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (req, resp) -> {
+                .onStatus(HttpStatusCode::isError, (_, resp) -> {
                     throw new RuntimeException("Failed with status: " + resp.getStatusCode());
                 })
                 .body(Article.class);
@@ -62,12 +62,10 @@ class ArticleControllerTest {
 
     @Test
     void testGetArticleById() {
-        // Create an article first
         Article article = new Article(null, "Mouse", "Wireless mouse",
                 new BigDecimal("10.00"), new BigDecimal("25.00"), new BigDecimal("0.19"));
-        Article created = articleService.createArticle(article);
+        Article created = articleUseCase.createArticle(article);
 
-        // Get the article
         Article response = restClient.get()
                 .uri("/" + created.getId())
                 .retrieve()
@@ -79,12 +77,10 @@ class ArticleControllerTest {
 
     @Test
     void testUpdateArticle() {
-        // Create an article first
         Article article = new Article(null, "Keyboard", "Mechanical keyboard",
                 new BigDecimal("30.00"), new BigDecimal("80.00"), new BigDecimal("0.19"));
-        Article created = articleService.createArticle(article);
+        Article created = articleUseCase.createArticle(article);
 
-        // Update the article
         created.setName("Updated Keyboard");
         created.setSalesPrice(new BigDecimal("90.00"));
 
@@ -102,27 +98,16 @@ class ArticleControllerTest {
 
     @Test
     void testDeleteArticle() {
-        // Create an article first
         Article article = new Article(null, "Monitor", "4K Monitor",
-                new BigDecimal("200.00"), new BigDecimal("450.00"), new BigDecimal("0.19"));
-        Article created = articleService.createArticle(article);
+                new BigDecimal("200.00"), new BigDecimal("400.00"), new BigDecimal("0.19"));
+        Article created = articleUseCase.createArticle(article);
 
-        // Delete the article
         restClient.delete()
                 .uri("/" + created.getId())
                 .retrieve()
                 .toBodilessEntity();
 
-        // Verify it's deleted - should throw an exception for 404
-        try {
-            restClient.get()
-                    .uri("/" + created.getId())
-                    .retrieve()
-                    .body(Article.class);
-            fail("Expected exception for deleted article");
-        } catch (Exception _) {
-            // Expected - article not found
-        }
+        assertFalse(articleUseCase.existsById(created.getId()));
     }
 
     @Test
@@ -132,9 +117,9 @@ class ArticleControllerTest {
                     .uri("/999999")
                     .retrieve()
                     .body(Article.class);
-            fail("Expected exception for non-existent article");
-        } catch (Exception _) {
-            // Expected - article not found
+            fail("Expected 404 error");
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("404"));
         }
     }
 }
