@@ -3,6 +3,7 @@ package org.interview.tecalliance.application.service;
 import org.interview.tecalliance.application.port.out.ArticlePersistencePort;
 import org.interview.tecalliance.domain.model.article.Article;
 import org.interview.tecalliance.domain.model.Discount;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,9 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for ArticleService, focusing on discount validation.
- */
 class ArticleServiceTest {
 
     @Mock
@@ -28,9 +26,18 @@ class ArticleServiceTest {
     @InjectMocks
     private ArticleService articleService;
 
+    private AutoCloseable closeable;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        closeable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        if (closeable != null) {
+            closeable.close();
+        }
     }
 
     @Test
@@ -59,9 +66,8 @@ class ArticleServiceTest {
                 LocalDate.now().minusDays(1), LocalDate.now().plusDays(30));
         article.addDiscount(discount);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            articleService.createArticle(article);
-        });
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () -> articleService.createArticle(article));
 
         assertTrue(exception.getMessage().contains("Discounts would cause the article price to go below net price"));
         verify(persistencePort, never()).save(any(Article.class));
@@ -77,9 +83,8 @@ class ArticleServiceTest {
 
         article.addDiscount(discount);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            articleService.createArticle(article);
-        });
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () -> articleService.createArticle(article));
 
         assertTrue(exception.getMessage().contains("Discounts would cause the article price to go below net price"));
         verify(persistencePort, never()).save(any(Article.class));
@@ -116,9 +121,8 @@ class ArticleServiceTest {
 
         when(persistencePort.findById(1L)).thenReturn(Optional.of(existingArticle));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            articleService.updateArticle(1L, updatedArticle);
-        });
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () -> articleService.updateArticle(1L, updatedArticle));
 
         assertTrue(exception.getMessage().contains("Discounts would cause the article price to go below net price"));
         verify(persistencePort, never()).save(any(Article.class));

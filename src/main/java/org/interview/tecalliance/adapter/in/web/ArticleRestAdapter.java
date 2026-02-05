@@ -7,10 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.interview.tecalliance.adapter.in.web.dto.ArticleWithPriceDTO;
 import org.interview.tecalliance.application.port.in.ArticleUseCase;
 import org.interview.tecalliance.domain.model.article.Article;
-import org.interview.tecalliance.domain.model.article.ArticleWithPrice;
 import org.interview.tecalliance.domain.model.article.BaseArticle;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,13 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * REST Adapter (Input Adapter) for Article management.
- * Adapts HTTP requests to use case invocations.
- */
+
 @RestController
 @RequestMapping("/api/v1/articles")
 @Tag(name = "Article Management", description = "Endpoints for managing articles, pricing, and discounts")
@@ -52,11 +46,11 @@ public class ArticleRestAdapter {
                     description = "Invalid input data"
             )
     })
-    public ResponseEntity<Article> createArticle(
+    public ResponseEntity<Void> createArticle(
             @Parameter(description = "Article data to create", required = true)
             @RequestBody Article article) {
-        Article created = articleUseCase.createArticle(article);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+        articleUseCase.createArticle(article);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -84,32 +78,8 @@ public class ArticleRestAdapter {
             @Parameter(description = "Return only articles with active discounts on the specified date")
             @RequestParam(required = false, defaultValue = "false") boolean discountOnly) {
 
-        if (withPrices || discountOnly) {
-            if (date == null) {
-                throw new IllegalArgumentException("Date parameter is required when withPrices=true or discountOnly=true");
-            }
-            if (withPrices) {
-                List<ArticleWithPrice> articlesWithPrices = articleUseCase.getArticlesWithPrices(date);
-                if (discountOnly) {
-                    articlesWithPrices = articlesWithPrices.stream()
-                            .filter(dto -> dto.getAppliedDiscount() != null)
-                            .toList();
-                }
-                // Convert to DTOs for JSON serialization
-                List<BaseArticle> baseArticles = articlesWithPrices.stream()
-                        .map(ArticleWithPriceDTO::fromDomain)
-                        .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-                return ResponseEntity.ok(baseArticles);
-            } else {
-                List<Article> articlesWithDiscount = articleUseCase.getArticlesWithDiscountOn(date);
-                List<BaseArticle> baseArticles = new ArrayList<>(articlesWithDiscount);
-                return ResponseEntity.ok(baseArticles);
-            }
-        } else {
-            List<Article> articles = articleUseCase.getAllArticles();
-            List<BaseArticle> baseArticles = new ArrayList<>(articles);
-            return ResponseEntity.ok(baseArticles);
-        }
+        List<BaseArticle> articles = articleUseCase.getArticlesWithFilters(date, withPrices, discountOnly);
+        return ResponseEntity.ok(articles);
     }
 
     @GetMapping("/{id}")

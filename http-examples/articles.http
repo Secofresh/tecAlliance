@@ -1,8 +1,8 @@
 ### Article API Examples
-### Base URL: http://localhost:8080/api/articles
+### Base URL: http://localhost:8080/api/v1/articles
 
 ### 1. Create a new article (Basic)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 ### 2. Create an article with discounts (Non-overlapping)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 }
 
 ### 3. Create an article with a single discount
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -60,15 +60,15 @@ Content-Type: application/json
 }
 
 ### 4. Get all articles
-GET http://localhost:8080/api/articles
+GET http://localhost:8080/api/v1/articles
 Accept: application/json
 
 ### 5. Get article by ID (replace {id} with actual ID)
-GET http://localhost:8080/api/articles/1
+GET http://localhost:8080/api/v1/articles/1
 Accept: application/json
 
 ### 6. Update an article (replace {id} with actual ID)
-PUT http://localhost:8080/api/articles/1
+PUT http://localhost:8080/api/v1/articles/1
 Content-Type: application/json
 
 {
@@ -80,7 +80,7 @@ Content-Type: application/json
 }
 
 ### 7. Update article and add discount
-PUT http://localhost:8080/api/articles/1
+PUT http://localhost:8080/api/v1/articles/1
 Content-Type: application/json
 
 {
@@ -100,13 +100,13 @@ Content-Type: application/json
 }
 
 ### 8. Delete an article (replace {id} with actual ID)
-DELETE http://localhost:8080/api/articles/1
+DELETE http://localhost:8080/api/v1/articles/1
 
 ### 9. Check if article exists (HEAD request)
-HEAD http://localhost:8080/api/articles/1
+HEAD http://localhost:8080/api/v1/articles/1
 
 ### 10. Try to create article with overlapping discounts (Should FAIL with 400)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -132,7 +132,7 @@ Content-Type: application/json
 }
 
 ### 11. Try to create article with discount causing loss (Should FAIL with 400)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -152,11 +152,11 @@ Content-Type: application/json
 }
 
 ### 12. Get non-existent article (Should return 404)
-GET http://localhost:8080/api/articles/999999
+GET http://localhost:8080/api/v1/articles/999999
 Accept: application/json
 
 ### 13. Update non-existent article (Should return 404)
-PUT http://localhost:8080/api/articles/999999
+PUT http://localhost:8080/api/v1/articles/999999
 Content-Type: application/json
 
 {
@@ -168,4 +168,4 @@ Content-Type: application/json
 }
 
 ### 14. Delete non-existent article (Should return 404)
-DELETE http://localhost:8080/api/articles/999999
+DELETE http://localhost:8080/api/v1/articles/999999

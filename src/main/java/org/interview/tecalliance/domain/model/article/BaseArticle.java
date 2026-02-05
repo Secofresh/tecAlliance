@@ -1,5 +1,6 @@
 package org.interview.tecalliance.domain.model.article;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Base article information")
 public abstract class BaseArticle {
 

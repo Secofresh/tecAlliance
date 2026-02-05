@@ -11,10 +11,6 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Global exception handler for REST API.
- * Part of the Web Input Adapter - handles HTTP-specific error responses.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -25,7 +21,7 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", "Bad Request");
         body.put("message", HtmlUtils.htmlEscape(ex.getMessage()));
-        body.put("path", request.getDescription(false).replace("uri=", ""));
+        body.put("path", sanitizePath(request));
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -35,8 +31,14 @@ public class GlobalExceptionHandler {
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         body.put("error", "Internal Server Error");
-        body.put("message", "An unexpected error occurred");
-        body.put("path", request.getDescription(false).replace("uri=", ""));
+        body.put("message", "An unexpected error occurred" + HtmlUtils.htmlEscape(ex.getMessage()));
+        body.put("path", sanitizePath(request));
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Avoid XSS attacks
+    private String sanitizePath(WebRequest request) {
+        String path = request.getDescription(false).replace("uri=", "");
+        return HtmlUtils.htmlEscape(path);
     }
 }

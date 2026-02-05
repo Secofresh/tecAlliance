@@ -1,27 +1,25 @@
 package org.interview.tecalliance.application.service;
 
+import lombok.RequiredArgsConstructor;
 import org.interview.tecalliance.application.port.in.ArticleUseCase;
 import org.interview.tecalliance.application.port.out.ArticlePersistencePort;
 import org.interview.tecalliance.domain.model.article.Article;
 import org.interview.tecalliance.domain.model.article.ArticleWithPrice;
+import org.interview.tecalliance.domain.model.article.BaseArticle;
 import org.interview.tecalliance.domain.model.Discount;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Application Service that implements Article use cases.
- * This is the core business logic layer independent of frameworks.
- */
+@Service
+@RequiredArgsConstructor
 public class ArticleService implements ArticleUseCase {
 
     private final ArticlePersistencePort persistencePort;
-
-    public ArticleService(ArticlePersistencePort persistencePort) {
-        this.persistencePort = persistencePort;
-    }
 
     @Override
     public Article createArticle(Article article) {
@@ -38,6 +36,30 @@ public class ArticleService implements ArticleUseCase {
     @Override
     public List<Article> getAllArticles() {
         return persistencePort.findAll();
+    }
+
+    @Override
+    public List<BaseArticle> getArticlesWithFilters(LocalDate date, boolean withPrices, boolean discountOnly) {
+        if ((withPrices || discountOnly) && date == null) {
+            throw new IllegalArgumentException("Date parameter is required when withPrices=true or discountOnly=true");
+        }
+        if (withPrices || discountOnly) {
+            if (withPrices) {
+                List<ArticleWithPrice> articlesWithPrices = getArticlesWithPrices(date);
+                if (discountOnly) {
+                    articlesWithPrices = articlesWithPrices.stream()
+                            .filter(article -> article.getAppliedDiscount() != null)
+                            .toList();
+                }
+                return new ArrayList<>(articlesWithPrices);
+            } else {
+                List<Article> articlesWithDiscount = getArticlesWithDiscountOn(date);
+                return new ArrayList<>(articlesWithDiscount);
+            }
+        } else {
+            List<Article> articles = getAllArticles();
+            return new ArrayList<>(articles);
+        }
     }
 
     @Override

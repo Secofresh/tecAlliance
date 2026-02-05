@@ -1,5 +1,6 @@
 package org.interview.tecalliance.domain.model.article;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Article entity with discount management capabilities")
 public class Article extends BaseArticle {
 

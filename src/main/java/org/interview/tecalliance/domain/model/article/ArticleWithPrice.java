@@ -1,5 +1,6 @@
 package org.interview.tecalliance.domain.model.article;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleWithPrice extends BaseArticle {
 
     private BigDecimal finalPrice;

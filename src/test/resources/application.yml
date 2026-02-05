@@ -1,0 +1,18 @@
+# Test configuration - Uses Testcontainers MongoDB
+spring:
+  data:
+    mongodb:
+      database: test
+
+  # Testcontainers will automatically configure the connection
+  docker:
+    compose:
+      enabled: false
+
+# Logging for tests
+logging:
+  level:
+    org.springframework.data.mongodb: WARN
+    org.interview.tecalliance: INFO
+    org.testcontainers: INFO
+    com.github.dockerjava: WARN

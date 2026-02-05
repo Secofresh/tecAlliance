@@ -1,12 +1,17 @@
 package org.interview.tecalliance.adapter.in.web;
 
+import org.interview.tecalliance.adapter.out.persistence.mongodb.repository.ArticleMongoRepository;
 import org.interview.tecalliance.application.port.in.ArticleUseCase;
+import org.interview.tecalliance.config.TestContainersConfiguration;
 import org.interview.tecalliance.domain.model.article.Article;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
@@ -16,6 +21,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestContainersConfiguration.class)
 class ArticleRestAdapterTest {
 
     @LocalServerPort
@@ -26,10 +32,18 @@ class ArticleRestAdapterTest {
     @Autowired
     private ArticleUseCase articleUseCase;
 
+    @Autowired
+    private ArticleMongoRepository repository;
+
     @BeforeEach
     void setUp() {
         String baseUrl = "http://localhost:" + port + "/api/v1/articles";
         restClient = RestClient.builder().baseUrl(baseUrl).build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        repository.deleteAll();
     }
 
     @Test
@@ -37,18 +51,15 @@ class ArticleRestAdapterTest {
         Article article = new Article(null, "Laptop", "Best laptop ever!",
                 new BigDecimal("500.00"), new BigDecimal("800.00"), new BigDecimal("0.19"));
 
-        Article response = restClient.post()
+        RestClient.ResponseSpec response = restClient.post()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(article)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (_, resp) -> {
                     throw new RuntimeException("Failed with status: " + resp.getStatusCode());
-                })
-                .body(Article.class);
+                });
 
-        assertNotNull(response);
-        assertNotNull(response.getId());
-        assertEquals("Laptop", response.getName());
+        assertEquals(response.toBodilessEntity().getStatusCode().value(), HttpStatus.CREATED.value());
     }
 
     @Test

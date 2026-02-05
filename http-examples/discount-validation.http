@@ -8,7 +8,7 @@
 ### ========================================
 
 ### Valid: Single discount, price stays above net price
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 ### Discounted price: 50 - (50 * 0.30) = 35.00 >= 20.00 ✓
 
 ### Valid: Multiple non-overlapping discounts
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -62,7 +62,7 @@ Content-Type: application/json
 ### All periods are separate ✓
 
 ### Valid: Discount at exactly net price (edge case)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -83,7 +83,7 @@ Content-Type: application/json
 ### Discounted price: 20 - (20 * 0.50) = 10.00 = 10.00 (net price) ✓
 
 ### Valid: Consecutive discounts (end date of one, start date of next day after)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -114,7 +114,7 @@ Content-Type: application/json
 ### ========================================
 
 ### Invalid: Discount causes price below net price
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -136,7 +136,7 @@ Content-Type: application/json
 ### Expected error: "Discounts would cause the article price to go below net price"
 
 ### Invalid: Overlapping discount periods (Complete overlap)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -164,7 +164,7 @@ Content-Type: application/json
 ### Expected error: "Multiple discounts have overlapping date ranges"
 
 ### Invalid: Overlapping discount periods (Partial overlap)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -192,7 +192,7 @@ Content-Type: application/json
 ### Expected error: "Multiple discounts have overlapping date ranges"
 
 ### Invalid: Adjacent periods (touching on same date)
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -220,7 +220,7 @@ Content-Type: application/json
 #### Expected error: "Multiple discounts have overlapping date ranges"
 
 ### Invalid: Very high discount causing loss
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {
@@ -242,7 +242,7 @@ Content-Type: application/json
 ### Expected error: "Discounts would cause the article price to go below net price"
 
 ### Invalid: One discount that's safe, but one that causes loss
-POST http://localhost:8080/api/articles
+POST http://localhost:8080/api/v1/articles
 Content-Type: application/json
 
 {

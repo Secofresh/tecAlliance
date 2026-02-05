@@ -1,6 +1,7 @@
 # Article CRUD API
 
 ## Overview
+
 REST API for managing articles with CRUD operations.
 
 ## Error Responses
@@ -25,8 +26,10 @@ All validation errors return a standardized error response with HTTP 400 Bad Req
 ## Endpoints
 
 ### Create Article
-- **URL**: `POST /api/articles`
+
+- **URL**: `POST /api/v1/articles`
 - **Body**:
+
 ```json
 {
   "name": "Laptop",
@@ -37,10 +40,12 @@ All validation errors return a standardized error response with HTTP 400 Bad Req
   "discounts": []
 }
 ```
+
 - **Response**: `201 Created`
 
 ### Get All Articles
-- **URL**: `GET /api/articles`
+
+- **URL**: `GET /api/v1/articles`
 - **Query Parameters** (all optional):
   - `date` (ISO date format): Date for price calculation and discount filtering
   - `withPrices` (boolean, default: false): Return articles with calculated final prices
@@ -48,6 +53,7 @@ All validation errors return a standardized error response with HTTP 400 Bad Req
 - **Response**: `200 OK`
 
 **Basic usage - Get all articles:**
+
 ```json
 [
   {
@@ -62,8 +68,9 @@ All validation errors return a standardized error response with HTTP 400 Bad Req
 ]
 ```
 
-**With prices - `GET /api/articles?date=2026-02-04&withPrices=true`:**
+**With prices - `GET /api/v1/articles?date=2026-02-04&withPrices=true`:**
 Returns `ArticleWithPriceDTO` objects with calculated final prices:
+
 ```json
 [
   {
@@ -85,27 +92,31 @@ Returns `ArticleWithPriceDTO` objects with calculated final prices:
 ]
 ```
 
-**Discount only - `GET /api/articles?date=2026-02-04&discountOnly=true`:**
+**Discount only - `GET /api/v1/articles?date=2026-02-04&discountOnly=true`:**
 Returns only articles that have an active discount on the specified date.
 
-**Combined - `GET /api/articles?date=2026-02-04&withPrices=true&discountOnly=true`:**
+**Combined - `GET /api/v1/articles?date=2026-02-04&withPrices=true&discountOnly=true`:**
 Returns articles with prices, filtered to only those with active discounts.
 
 ### Get Article by ID
-- **URL**: `GET /api/articles/{id}`
+
+- **URL**: `GET /api/v1/articles/{id}`
 - **Response**: `200 OK` or `404 Not Found`
 
 ### Update Article
-- **URL**: `PUT /api/articles/{id}`
+
+- **URL**: `PUT /api/v1/articles/{id}`
 - **Body**: Same as Create
 - **Response**: `200 OK` or `404 Not Found`
 
 ### Delete Article
-- **URL**: `DELETE /api/articles/{id}`
+
+- **URL**: `DELETE /api/v1/articles/{id}`
 - **Response**: `204 No Content` or `404 Not Found`
 
 ### Check Article Exists
-- **URL**: `HEAD /api/articles/{id}`
+
+- **URL**: `HEAD /api/v1/articles/{id}`
 - **Response**: `200 OK` or `404 Not Found`
 
 ## Example Usage
@@ -114,7 +125,7 @@ Returns articles with prices, filtered to only those with active discounts.
 
 ```bash
 # Create an article
-curl -X POST http://localhost:8080/api/articles \
+curl -X POST http://localhost:8080/api/v1/articles \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Laptop",
@@ -125,22 +136,22 @@ curl -X POST http://localhost:8080/api/articles \
   }'
 
 # Get all articles
-curl http://localhost:8080/api/articles
+curl http://localhost:8080/api/v1/articles
 
 # Get articles with calculated prices for a specific date
-curl "http://localhost:8080/api/articles?date=2026-02-04&withPrices=true"
+curl "http://localhost:8080/api/v1/articles?date=2026-02-04&withPrices=true"
 
 # Get only articles with active discounts on a specific date
-curl "http://localhost:8080/api/articles?date=2026-02-04&discountOnly=true"
+curl "http://localhost:8080/api/v1/articles?date=2026-02-04&discountOnly=true"
 
 # Get articles with prices, filtered to only those with discounts
-curl "http://localhost:8080/api/articles?date=2026-02-04&withPrices=true&discountOnly=true"
+curl "http://localhost:8080/api/v1/articles?date=2026-02-04&withPrices=true&discountOnly=true"
 
 # Get article by ID
-curl http://localhost:8080/api/articles/1
+curl http://localhost:8080/api/v1/articles/1
 
 # Update an article
-curl -X PUT http://localhost:8080/api/articles/1 \
+curl -X PUT http://localhost:8080/api/v1/articles/1 \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Gaming Laptop",
@@ -151,5 +162,5 @@ curl -X PUT http://localhost:8080/api/articles/1 \
   }'
 
 # Delete an article
-curl -X DELETE http://localhost:8080/api/articles/1
+curl -X DELETE http://localhost:8080/api/v1/articles/1
 ```
