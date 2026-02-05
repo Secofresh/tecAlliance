@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class ArticleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<? extends BaseArticle>> getAllArticles(
+    public ResponseEntity<List<BaseArticle>> getAllArticles(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false, defaultValue = "false") boolean withPrices,
             @RequestParam(required = false, defaultValue = "false") boolean discountOnly) {
@@ -45,14 +46,18 @@ public class ArticleController {
                             .filter(dto -> dto.getAppliedDiscount() != null)
                             .toList();
                 }
-                return ResponseEntity.ok(articlesWithPrices);
+                // Cast to List<BaseArticle>
+                List<BaseArticle> baseArticles = new ArrayList<>(articlesWithPrices);
+                return ResponseEntity.ok(baseArticles);
             } else {
                 List<Article> articlesWithDiscount = articleService.getArticlesWithDiscountOn(date);
-                return ResponseEntity.ok(articlesWithDiscount);
+                List<BaseArticle> baseArticles = new ArrayList<>(articlesWithDiscount);
+                return ResponseEntity.ok(baseArticles);
             }
         } else {
             List<Article> articles = articleService.getAllArticles();
-            return ResponseEntity.ok(articles);
+            List<BaseArticle> baseArticles = new ArrayList<>(articles);
+            return ResponseEntity.ok(baseArticles);
         }
     }
 
