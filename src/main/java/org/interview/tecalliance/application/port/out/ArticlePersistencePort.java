@@ -57,7 +57,7 @@ public interface ArticlePersistencePort {
      * @throws IllegalArgumentException if id is null
      * @throws org.springframework.dao.DataAccessException if persistence operation fails
      */
-    Optional<Article> findById(Long id);
+    Optional<Article> findById(String id);
 
     /**
      * Retrieves all articles from the persistent storage.
@@ -90,7 +90,7 @@ public interface ArticlePersistencePort {
      * @throws IllegalArgumentException if id is null
      * @throws org.springframework.dao.DataAccessException if persistence operation fails
      */
-    boolean deleteById(Long id);
+    boolean deleteById(String id);
 
     /**
      * Checks whether an article with the given identifier exists in the persistent storage.
@@ -108,5 +108,5 @@ public interface ArticlePersistencePort {
      * @throws IllegalArgumentException if id is null
      * @throws org.springframework.dao.DataAccessException if persistence operation fails
      */
-    boolean existsById(Long id);
+    boolean existsById(String id);
 }

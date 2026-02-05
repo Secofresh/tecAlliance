@@ -109,20 +109,20 @@ class ArticleServiceTest {
 
     @Test
     void testUpdateArticle_WithDiscountsCausingLoss_ShouldThrowException() {
-        Article existingArticle = new Article(1L, "Test Product", "Test Slogan",
+        Article existingArticle = new Article("1", "Test Product", "Test Slogan",
                 new BigDecimal("100.00"), new BigDecimal("150.00"), new BigDecimal("0.19"));
 
-        Article updatedArticle = new Article(1L, "Updated Product", "Updated Slogan",
+        Article updatedArticle = new Article("1", "Updated Product", "Updated Slogan",
                 new BigDecimal("100.00"), new BigDecimal("120.00"), new BigDecimal("0.19"));
 
         Discount discount = new Discount(null, "Too High Discount", new BigDecimal("25"),
                 LocalDate.now().minusDays(1), LocalDate.now().plusDays(30));
         updatedArticle.addDiscount(discount);
 
-        when(persistencePort.findById(1L)).thenReturn(Optional.of(existingArticle));
+        when(persistencePort.findById("1")).thenReturn(Optional.of(existingArticle));
 
         IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class, () -> articleService.updateArticle(1L, updatedArticle));
+                assertThrows(IllegalArgumentException.class, () -> articleService.updateArticle("1", updatedArticle));
 
         assertTrue(exception.getMessage().contains("Discounts would cause the article price to go below net price"));
         verify(persistencePort, never()).save(any(Article.class));

@@ -29,7 +29,7 @@ public class ArticleService implements ArticleUseCase {
     }
 
     @Override
-    public Optional<Article> getArticleById(Long id) {
+    public Optional<Article> getArticleById(String id) {
         return persistencePort.findById(id);
     }
 
@@ -83,7 +83,7 @@ public class ArticleService implements ArticleUseCase {
     }
 
     @Override
-    public Optional<Article> updateArticle(Long id, Article updatedArticle) {
+    public Optional<Article> updateArticle(String id, Article updatedArticle) {
         return persistencePort.findById(id).map(existingArticle -> {
             existingArticle.setName(updatedArticle.getName());
             existingArticle.setSlogan(updatedArticle.getSlogan());
@@ -99,12 +99,12 @@ public class ArticleService implements ArticleUseCase {
     }
 
     @Override
-    public boolean deleteArticle(Long id) {
+    public boolean deleteArticle(String id) {
         return persistencePort.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(String id) {
         return persistencePort.existsById(id);
     }
 

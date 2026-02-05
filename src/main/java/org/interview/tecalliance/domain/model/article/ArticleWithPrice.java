@@ -18,7 +18,7 @@ public class ArticleWithPrice extends BaseArticle {
     private Discount appliedDiscount;
     private boolean hasActiveDiscount;
 
-    public ArticleWithPrice(Long id, String name, String slogan, BigDecimal netPrice,
+    public ArticleWithPrice(String id, String name, String slogan, BigDecimal netPrice,
                             BigDecimal salesPrice, BigDecimal vatRatio, BigDecimal finalPrice,
                             Discount appliedDiscount) {
         super(id, name, slogan, netPrice, salesPrice, vatRatio);

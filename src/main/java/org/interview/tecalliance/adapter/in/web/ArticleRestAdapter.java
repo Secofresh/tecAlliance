@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.interview.tecalliance.application.port.in.ArticleUseCase;
 import org.interview.tecalliance.domain.model.article.Article;
 import org.interview.tecalliance.domain.model.article.BaseArticle;
@@ -18,17 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/v1/articles")
+@RequiredArgsConstructor
 @Tag(name = "Article Management", description = "Endpoints for managing articles, pricing, and discounts")
 public class ArticleRestAdapter {
 
     private final ArticleUseCase articleUseCase;
-
-    public ArticleRestAdapter(ArticleUseCase articleUseCase) {
-        this.articleUseCase = articleUseCase;
-    }
 
     @PostMapping
     @Operation(
@@ -99,8 +96,8 @@ public class ArticleRestAdapter {
             )
     })
     public ResponseEntity<Article> getArticleById(
-            @Parameter(description = "Article ID", required = true, example = "1")
-            @PathVariable Long id) {
+            @Parameter(description = "Article ID", required = true, example = "507f1f77bcf86cd799439011")
+            @PathVariable String id) {
         return articleUseCase.getArticleById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -127,8 +124,8 @@ public class ArticleRestAdapter {
             )
     })
     public ResponseEntity<Article> updateArticle(
-            @Parameter(description = "Article ID", required = true, example = "1")
-            @PathVariable Long id,
+            @Parameter(description = "Article ID", required = true, example = "507f1f77bcf86cd799439011")
+            @PathVariable String id,
             @Parameter(description = "Updated article data", required = true)
             @RequestBody Article article) {
         return articleUseCase.updateArticle(id, article)
@@ -152,8 +149,8 @@ public class ArticleRestAdapter {
             )
     })
     public ResponseEntity<Void> deleteArticle(
-            @Parameter(description = "Article ID", required = true, example = "1")
-            @PathVariable Long id) {
+            @Parameter(description = "Article ID", required = true, example = "507f1f77bcf86cd799439011")
+            @PathVariable String id) {
         if (articleUseCase.deleteArticle(id)) {
             return ResponseEntity.noContent().build();
         }
@@ -176,8 +173,8 @@ public class ArticleRestAdapter {
             )
     })
     public ResponseEntity<Void> articleExists(
-            @Parameter(description = "Article ID", required = true, example = "1")
-            @PathVariable Long id) {
+            @Parameter(description = "Article ID", required = true, example = "507f1f77bcf86cd799439011")
+            @PathVariable String id) {
         if (articleUseCase.existsById(id)) {
             return ResponseEntity.ok().build();
         }

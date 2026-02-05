@@ -49,7 +49,7 @@ public interface ArticleUseCase {
      * @return an Optional containing the article if found, or empty if not found
      * @throws IllegalArgumentException if id is null
      */
-    Optional<Article> getArticleById(Long id);
+    Optional<Article> getArticleById(String id);
 
     /**
      * Retrieves all articles in the system without any filtering.
@@ -128,7 +128,7 @@ public interface ArticleUseCase {
      * @return an Optional containing the updated article if found, or empty if not found
      * @throws IllegalArgumentException if article validation fails or id is null
      */
-    Optional<Article> updateArticle(Long id, Article article);
+    Optional<Article> updateArticle(String id, Article article);
 
     /**
      * Deletes an article from the system.
@@ -141,7 +141,7 @@ public interface ArticleUseCase {
      * @return true if the article was deleted, false if the article was not found
      * @throws IllegalArgumentException if id is null
      */
-    boolean deleteArticle(Long id);
+    boolean deleteArticle(String id);
 
     /**
      * Checks if an article exists in the system.
@@ -154,5 +154,5 @@ public interface ArticleUseCase {
      * @return true if an article with the given ID exists, false otherwise
      * @throws IllegalArgumentException if id is null
      */
-    boolean existsById(Long id);
+    boolean existsById(String id);
 }

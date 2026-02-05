@@ -23,7 +23,7 @@ public class Article extends BaseArticle {
     @Schema(description = "List of discounts applicable to this article", example = "[]")
     private List<Discount> discounts = new ArrayList<>();
 
-    public Article(Long id, String name, String slogan, BigDecimal netPrice,
+    public Article(String id, String name, String slogan, BigDecimal netPrice,
                    BigDecimal salesPrice, BigDecimal vatRatio) {
         super(id, name, slogan, netPrice, salesPrice, vatRatio);
         this.discounts = new ArrayList<>();
