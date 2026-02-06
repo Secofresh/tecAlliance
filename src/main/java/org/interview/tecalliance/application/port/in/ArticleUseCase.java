@@ -31,7 +31,7 @@ public interface ArticleUseCase {
      * The article will be validated to ensure:
      * <ul>
      *   <li>No overlapping discount date ranges</li>
-     *   <li>Discounts don't cause the price to go below net price</li>
+     *   <li>Discounts don't cause the price to go below the net price</li>
      * </ul>
      * </p>
      *
@@ -57,7 +57,7 @@ public interface ArticleUseCase {
      * or discount filtering. For filtered results, use {@link #getArticlesWithFilters}.
      * </p>
      *
-     * @return list of all articles (may be empty but never null)
+     * @return list of all articles (maybe empty but never null)
      */
     List<Article> getAllArticles();
 
@@ -88,7 +88,7 @@ public interface ArticleUseCase {
      * will be validated using the same rules as creation:
      * <ul>
      *   <li>No overlapping discount date ranges</li>
-     *   <li>Discounts don't cause the price to go below net price</li>
+     *   <li>Discounts don't cause the price to go below the net price</li>
      * </ul>
      * </p>
      *
@@ -102,7 +102,7 @@ public interface ArticleUseCase {
     /**
      * Deletes an article from the system.
      * <p>
-     * This operation permanently removes the article and all its associated data
+     * This operation permanently removes the article and all its associated data,
      * including discounts.
      * </p>
      *
