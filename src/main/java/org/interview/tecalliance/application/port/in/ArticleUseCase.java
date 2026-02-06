@@ -1,7 +1,6 @@
 package org.interview.tecalliance.application.port.in;
 
 import org.interview.tecalliance.domain.model.article.Article;
-import org.interview.tecalliance.domain.model.article.ArticleWithPrice;
 import org.interview.tecalliance.domain.model.article.BaseArticle;
 
 import java.time.LocalDate;
@@ -81,36 +80,6 @@ public interface ArticleUseCase {
      * @throws IllegalArgumentException if date is null when withPrices or discountOnly is true
      */
     List<BaseArticle> getArticlesWithFilters(LocalDate date, boolean withPrices, boolean discountOnly);
-
-    /**
-     * Retrieves all articles with calculated prices for a specific date.
-     * <p>
-     * For each article, this method calculates:
-     * <ul>
-     *   <li>The final price after applying any valid discount for the given date</li>
-     *   <li>Which discount (if any) was applied</li>
-     * </ul>
-     * If no discount is active on the given date, the sales price is used.
-     * </p>
-     *
-     * @param date the date to calculate prices for (must not be null)
-     * @return list of articles with calculated prices and applied discounts
-     * @throws IllegalArgumentException if date is null
-     */
-    List<ArticleWithPrice> getArticlesWithPrices(LocalDate date);
-
-    /**
-     * Retrieves only articles that have active discounts on a specific date.
-     * <p>
-     * An article is considered to have an active discount if at least one
-     * of its discounts has a date range that includes the given date.
-     * </p>
-     *
-     * @param date the date to check for active discounts (must not be null)
-     * @return list of articles with active discounts on the given date (may be empty but never null)
-     * @throws IllegalArgumentException if date is null
-     */
-    List<Article> getArticlesWithDiscountOn(LocalDate date);
 
     /**
      * Updates an existing article with new information.

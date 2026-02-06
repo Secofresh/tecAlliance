@@ -34,10 +34,6 @@ public class TestContainersConfiguration {
         }
     }
 
-    /**
-     * Ensures proper cleanup of the MongoDB container when the test context is destroyed.
-     * This method is automatically called by Spring during application context shutdown.
-     */
     @PreDestroy
     public void cleanup() {
         if (container != null && container.isRunning()) {

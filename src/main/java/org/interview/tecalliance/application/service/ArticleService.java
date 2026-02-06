@@ -63,26 +63,6 @@ public class ArticleService implements ArticleUseCase {
     }
 
     @Override
-    public List<ArticleWithPrice> getArticlesWithPrices(LocalDate date) {
-        return persistencePort.findAll().stream()
-                .map(article -> {
-                    BigDecimal finalPrice = article.calculateDiscountedPrice(date);
-                    Discount appliedDiscount = article.getApplicableDiscount(date);
-                    return ArticleWithPrice.from(article, finalPrice, appliedDiscount);
-                })
-                .toList();
-    }
-
-    @Override
-    public List<Article> getArticlesWithDiscountOn(LocalDate date) {
-        return persistencePort.findAll().stream()
-                .filter(article -> article.getDiscounts() != null &&
-                        article.getDiscounts().stream()
-                                .anyMatch(discount -> discount.isValidOn(date)))
-                .toList();
-    }
-
-    @Override
     public Optional<Article> updateArticle(String id, Article updatedArticle) {
         return persistencePort.findById(id).map(existingArticle -> {
             existingArticle.setName(updatedArticle.getName());
@@ -106,6 +86,24 @@ public class ArticleService implements ArticleUseCase {
     @Override
     public boolean existsById(String id) {
         return persistencePort.existsById(id);
+    }
+
+    private List<ArticleWithPrice> getArticlesWithPrices(LocalDate date) {
+        return persistencePort.findAll().stream()
+                .map(article -> {
+                    BigDecimal finalPrice = article.calculateDiscountedPrice(date);
+                    Discount appliedDiscount = article.getApplicableDiscount(date);
+                    return ArticleWithPrice.from(article, finalPrice, appliedDiscount);
+                })
+                .toList();
+    }
+
+    private List<Article> getArticlesWithDiscountOn(LocalDate date) {
+        return persistencePort.findAll().stream()
+                .filter(article -> article.getDiscounts() != null &&
+                        article.getDiscounts().stream()
+                                .anyMatch(discount -> discount.isValidOn(date)))
+                .toList();
     }
 
     private void validateArticle(Article article) {
