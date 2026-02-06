@@ -3,12 +3,11 @@ package org.interview.tecalliance.application.service;
 import org.interview.tecalliance.application.port.out.ArticlePersistencePort;
 import org.interview.tecalliance.domain.model.article.Article;
 import org.interview.tecalliance.domain.model.Discount;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
 
     @Mock
@@ -25,20 +25,6 @@ class ArticleServiceTest {
 
     @InjectMocks
     private ArticleService articleService;
-
-    private AutoCloseable closeable;
-
-    @BeforeEach
-    void setUp() {
-        closeable = MockitoAnnotations.openMocks(this);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        if (closeable != null) {
-            closeable.close();
-        }
-    }
 
     @Test
     void testCreateArticle_WithValidDiscounts_ShouldSucceed() {
